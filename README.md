@@ -1,2 +1,2 @@
 # PyPID
-Simulate control equation
+Simulate control equations
