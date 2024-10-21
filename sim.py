@@ -1,30 +1,38 @@
 import pybullet as p
 import time
 import pybullet_data
+import time
+import os
 
-def setup_simulation():
+running_simulation = True
+def run_simulation():
+    global running_simulation
     physicsClient = p.connect(p.GUI)
     p.setAdditionalSearchPath(pybullet_data.getDataPath())
     p.setGravity(0, 0, -9.8)
-    
+        
     planeId = p.loadURDF("plane.urdf")
     bodyApos = [0, 0, 5]
     startOrientation = p.getQuaternionFromEuler([0, 0, 0])
-    bodyA = p.loadURDF("Models/Arm.urdf", bodyApos, startOrientation)
+    
+    bodyA = p.loadURDF("Arm.urdf", bodyApos, startOrientation)
+    
     joint_index = p.getJointInfo(bodyA, 0)[0]
-    # p.resetBasePositionAndOrientation(bodyA, [0, 0, 0], [0, 0, 0, 1])
     p.changeDynamics(bodyA, -1, lateralFriction=1, spinningFriction=0.1, rollingFriction=0.01)
-    return bodyA
-
-def run_simulation(bodyA):
+    
     try:
-        while True:
-            p.applyExternalForce(bodyA, linkIndex=-1, forceObj=[0, 0, (4*9.81)], posObj=[0, 0, 0], flags=p.WORLD_FRAME)
+        while running_simulation:
+            #p.applyExternalForce(bodyA, linkIndex=-1, forceObj=[0, 0, (4 * 9.81)], posObj=[0, 0, 0], flags=p.WORLD_FRAME)
             p.stepSimulation()
-            time.sleep(1./240.)
-    except KeyboardInterrupt:
+            time.sleep(1. / 240.)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    finally:
         p.disconnect()
+        os.remove("arm.urdf")
 
-if __name__ == "__main__":
-    bodyA = setup_simulation()
-    run_simulation(bodyA)
+def stop_simulation():
+    global running_simulation
+    running_simulation = False
+
+run_simulation()
