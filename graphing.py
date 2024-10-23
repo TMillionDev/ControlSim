@@ -1,35 +1,65 @@
+from tkinter import *
+from matplotlib import pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
 import time
-import matplotlib.pyplot as plt
 from simple_pid import PID
 
-kP = 0.9
-kI = 0
-kD = 0
+def plotPID(kP, kI, kD, sp, tol):
+    fig = Figure(figsize = (10,5), dpi = 100)
 
-pid = PID(kP, kI, kD)
-pid.setpoint = 25
-pid.sample_time = 0.01 
+    pid = PID(kP, kI, kD)
+    pid.setpoint = sp
+    pid.sample_time = 0.01 
+    t=0
+    val = 0 
+    values = []
+    outputs = []
+    time_steps = []
 
-t=0
-val = 0 
-values = []
-time_steps = []
+    while val < (sp - tol):
+        output = pid(val) 
+        
+        t+=0.01
+        val += output * 0.1 
 
-while val < 24.9:
-    output = pid(val) 
-    
-    t+=0.01
-    val += output * 0.1 
+        values.append(val)
+        outputs.append(output)
+        time_steps.append(t * 0.01)
 
-    values.append(val)
-    time_steps.append(t * pid.sample_time)
+        print(val)
+        time.sleep(pid.sample_time)
 
-    time.sleep(pid.sample_time)
+    plot1 = fig.add_subplot(1,2,1)
+    plot2 = fig.add_subplot(1,2,2)
 
-plt.plot(time_steps, values, label='System Value')
-plt.axhline(y=pid.setpoint, color='r', linestyle='--', label='Setpoint')
-plt.xlabel('Time (seconds)')
-plt.ylabel('Value')
-plt.title('PID Control System Response')
-plt.legend()
-plt.show()
+    print(time_steps)
+    print("\b")
+    print(outputs)
+    print(len(time_steps))
+    print(len(values))
+    print(len(outputs))
+
+    plot1 = fig.add_subplot(1,2,1)
+    plot1.plot(time_steps, values, color='red')
+    print("Plotted graph 1")
+    plot2 = fig.add_subplot(1,2,2)
+    plot2.plot(time_steps, outputs, color='red')
+    print("Plotted graph 2")
+    return fig
+
+def initEnv():
+    root = Tk()
+    canvas = FigureCanvasTkAgg(plotPID(0.7,0,0,10,0.5), master = root)
+    canvas.draw()
+    canvas.get_tk_widget().pack()
+
+    plot_button = Button(master = root,  
+                        command = plotPID(0.7,0,0,10,0.5), 
+                        height = 2,  
+                        width = 10, 
+                        text = "Plot") 
+
+    plot_button.pack()
+
+    root.mainloop()
