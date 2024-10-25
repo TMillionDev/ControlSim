@@ -1,69 +1,72 @@
-from tkinter import *
-from matplotlib import pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.figure import Figure
+import pybullet as p
+import pybullet_data
 import time
-from simple_pid import PID
+import numpy as np
+import matplotlib.pyplot as plt
 
-def plotPID(kP, kI, kD, sp, tol):
-    fig = Figure(figsize = (10,5), dpi = 100)
+def run_simulation(times,positions,velocities):
+    # Initialize physics simulation
+    physicsClient = p.connect(p.DIRECT)
+    p.setAdditionalSearchPath(pybullet_data.getDataPath())  # Use PyBullet data for plane
 
-    pid = PID(kP, kI, kD)
-    print("pid init")
-    pid.setpoint = sp
-    pid.sample_time = 0.01 
-    t=0
-    val = 0 
-    values = []
-    outputs = []
-    time_steps = []
-    print("pid setup")
+    # Load a simple plane and a sphere (as an example)
+    plane_id = p.loadURDF("plane.urdf")
+    sphere_id = p.loadURDF("sphere2.urdf", [0, 0, 1], p.getQuaternionFromEuler([0, 0, 0]))
 
-    while val < (sp - tol):
-        output = pid(val) 
-        
-        t+=0.01
-        val += output * 0.1 
+    # Simulation parameters
+    time_step = 1 / 240.0
+    p.setGravity(0, 0, -9.81)
 
-        values.append(val)
-        outputs.append(output)
-        time_steps.append(t * 0.01)
+    # Initialize Matplotlib graph
+    plt.ion()  # Interactive mode on
+    fig, ax = plt.subplots(2, 1, figsize=(8, 6))
 
-        print(val)
-        time.sleep(pid.sample_time)
+    start_time = time.time()
 
-    plot1 = fig.add_subplot(1,2,1)
-    plot2 = fig.add_subplot(1,2,2)
+    # Run simulation loop
+    for i in range(1000):
+        p.stepSimulation()
 
-    print(time_steps)
-    print("\b")
-    print(outputs)
-    print(len(time_steps))
-    print(len(values))
-    print(len(outputs))
+        # Get current time
+        current_time = time.time() - start_time
+        times.append(current_time)
 
-    plot1 = fig.add_subplot(1,2,1)
-    plot1.plot(time_steps, values, color='red')
-    print("Plotted graph 1")
-    plot2 = fig.add_subplot(1,2,2)
-    plot2.plot(time_steps, outputs, color='red')
-    print("Plotted graph 2")
-    return fig
+        # Get sphere state: position and velocity
+        pos, ori = p.getBasePositionAndOrientation(sphere_id)
+        vel, ang_vel = p.getBaseVelocity(sphere_id)
 
-root = Tk()
-canvas = FigureCanvasTkAgg(plotPID(0.7,0,0,10,0.5), master = root)
-canvas.draw()
-canvas.get_tk_widget().pack()
+        positions.append(pos[2])  # Only track Z-axis position
+        velocities.append(vel[2])  # Only track Z-axis velocity
 
-canvas.title("plotting")
-canvas.geometry("1000x600")
+        # Plotting Position
+        ax[0].cla()  # Clear the subplot
+        ax[0].plot(times, positions, label="Position (Z-axis)", color="blue")
+        ax[0].set_title("Position over Time")
+        ax[0].set_xlabel("Time (s)")
+        ax[0].set_ylabel("Position (m)")
+        ax[0].legend()
+        ax[0].grid(True)
 
-plot_button = Button(master = root,  
-                    command = plotPID(0.7,0,0,10,0.5), 
-                    height = 2,  
-                    width = 10, 
-                    text = "Plot") 
+        # Plotting Velocity
+        ax[1].cla()  # Clear the subplot
+        ax[1].plot(times, velocities, label="Velocity (Z-axis)", color="green")
+        ax[1].set_title("Velocity over Time")
+        ax[1].set_xlabel("Time (s)")
+        ax[1].set_ylabel("Velocity (m/s)")
+        ax[1].legend()
+        ax[1].grid(True)
 
-plot_button.pack()
+        # Draw the plot
+        plt.pause(0.01)
 
-root.mainloop()
+        time.sleep(time_step)
+
+    # Keep the plot open
+    plt.ioff()
+    plt.show()
+
+    # Disconnect physics simulation
+    p.disconnect()
+
+# Run the simulation with real-time graph
+run_simulation([],[],[])

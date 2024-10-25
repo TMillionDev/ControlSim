@@ -10,7 +10,7 @@ def write(l, w, wgt):
         <visual>
             <origin xyz="0 0 -3.25" rpy="0 1.57 0"/>
             <geometry>
-                <box size="0.5 5 """ + str(int(width) + 3) + """\"/>
+                <box size="0.5 5 """ + str(int(width) + 5) + """\"/>
             </geometry>
         <material name="Cyan1">
                 <color rgba="0 0.8 0.8 1.0"/>
@@ -30,7 +30,7 @@ def write(l, w, wgt):
     </link>
     <link name="tube">
         <visual>
-            <origin xyz="0 0 0.5" rpy="0 0 0"/>
+            <origin xyz="0 0 -1" rpy="0 0 0"/>
             <geometry>
                 <box size=\"""" + width + """ 0.5 """ + length + """\"/>
             </geometry>
@@ -39,14 +39,14 @@ def write(l, w, wgt):
             </material>
         </visual>
         <collision>
-            <origin xyz="0 0 0.5" rpy="0 0 0"/>
+            <origin xyz="0 0 -1" rpy="0 0 0"/>
             <geometry>
                 <box size=\"""" + width + """ 0.5 """ + length + """\"/>
             </geometry>
         </collision>
         <inertial>
             <mass value=\"""" + weight + """\"/>
-            <origin xyz="0 0 0.5" rpy="0 0 0"/>
+            <origin xyz="0 0 -1" rpy="0 0 0"/>
             <inertia ixx="5.4167" ixy="0.0" ixz="0.0" iyy="5.4167" iyz="0.0" izz="0.4167"/>
         </inertial>
     </link>
@@ -167,4 +167,4 @@ def write(l, w, wgt):
 
     print("URDF generated")
 
-write(3, 1, 11)
+write(3, 2, 11)

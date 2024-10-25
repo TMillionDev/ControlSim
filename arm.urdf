@@ -4,7 +4,7 @@
         <visual>
             <origin xyz="0 0 -3.25" rpy="0 1.57 0"/>
             <geometry>
-                <box size="0.5 5 4"/>
+                <box size="0.5 5 7"/>
             </geometry>
         <material name="Cyan1">
                 <color rgba="0 0.8 0.8 1.0"/>
@@ -24,23 +24,23 @@
     </link>
     <link name="tube">
         <visual>
-            <origin xyz="0 0 0.5" rpy="0 0 0"/>
+            <origin xyz="0 0 -1" rpy="0 0 0"/>
             <geometry>
-                <box size="1 0.5 3"/>
+                <box size="2 0.5 3"/>
             </geometry>
             <material name="Blue1">
                 <color rgba="0 0 1.0 1.0"/>
             </material>
         </visual>
         <collision>
-            <origin xyz="0 0 0.5" rpy="0 0 0"/>
+            <origin xyz="0 0 -1" rpy="0 0 0"/>
             <geometry>
-                <box size="1 0.5 3"/>
+                <box size="2 0.5 3"/>
             </geometry>
         </collision>
         <inertial>
-            <mass value="11"/>
-            <origin xyz="0 0 0.5" rpy="0 0 0"/>
+            <mass value="15"/>
+            <origin xyz="0 0 -1" rpy="0 0 0"/>
             <inertia ixx="5.4167" ixy="0.0" ixz="0.0" iyy="5.4167" iyz="0.0" izz="0.4167"/>
         </inertial>
     </link>
