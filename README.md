@@ -1,5 +1,4 @@
 # PyPID
-Simulate control equations using python
-Visualize the PID controller and simulate it in a physics engine with graphing
+Simulate and Visualize control equations with a 3d render and graphing
 
 By Thanveer Muthukumar
